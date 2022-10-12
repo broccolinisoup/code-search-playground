@@ -1,96 +1,136 @@
-import { Box, Text, Link, StyledOcticon } from '@primer/react'
+import { Box, Text, StyledOcticon } from '@primer/react'
+import React, { useEffect } from 'react'
 import {
-    MarkGithubIcon,
-    CheckIcon,
-    CommentIcon,
-    MortarBoardIcon,
+  MarkGithubIcon,
+  CheckIcon,
+  CommentIcon,
+  CodeIcon,
+  IssueOpenedIcon,
+  GitPullRequestIcon,
+  CommentDiscussionIcon,
+  PlayIcon,
+  ProjectIcon,
+  ShieldLockIcon,
+  GraphIcon,
+  GearIcon,
+  MortarBoardIcon,
 } from '@primer/octicons-react'
 
-import MonaLoadingImage from './images/mona-loading.gif'
+import { UnderlineNav } from '@primer/react/drafts'
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useParams,
+  useMatch,
+  useResolvedPath,
+  useNavigate,
+  NavigateOptions,
+  useLocation,
+} from 'react-router-dom'
 
 function Playground() {
-    /*
-    WELCOME TO MONA's 😽🐙 PLAYGROUND
-    Delete everything in here or play with the existing Mona playground code to get familiar with Primer React.
-    Documentation: https://primer.style/react
-    Documentation colors: https://primer.style/primitives/colors
-  */
+  const items = [
+    { navigation: 'Code', icon: CodeIcon, href: '/code' },
+    {
+      navigation: 'Issues',
+      icon: IssueOpenedIcon,
+      counter: 120,
+      href: '/issues',
+    },
+    {
+      navigation: 'Pull Requests',
+      icon: GitPullRequestIcon,
+      counter: 13,
+      href: '/pulls',
+    },
+    {
+      navigation: 'Discussions',
+      icon: CommentDiscussionIcon,
+      counter: 5,
+      href: '/discussions',
+    },
+    { navigation: 'Actions', icon: PlayIcon, counter: 4, href: '/actions' },
+    {
+      navigation: 'Projects',
+      icon: ProjectIcon,
+      counter: 9,
+      href: '/projects',
+    },
+    { navigation: 'Insights', icon: GraphIcon, href: '/insights' },
+    { navigation: 'Settings', icon: GearIcon, counter: 10, href: '/settings' },
+    { navigation: 'Security', icon: ShieldLockIcon, href: '/security' },
+  ]
 
-    return (
-        <Box
-            bg="canvas.default"
-            width="100%"
-            minHeight="100vh"
-            display="flex"
-            flexDirection="column"
-            justifyContent="center"
-            alignItems="center"
-            p={5}
-        >
-            <MarkGithubIcon size={24} />
-            <Box
-                maxWidth={600}
-                width="100%"
-                height={300}
-                bg="neutral.emphasisPlus"
-                borderRadius={2}
-                p={4}
-                my={6}
-            >
-                <CodeLine icon={CheckIcon} iconColor="success.fg">
-                    Mona's playground successfully initialised...
-                </CodeLine>
-                <CodeLine icon={CommentIcon} iconColor="accent.fg">
-                    Visit <Text color="text.warning">src/Playground.js</Text>{' '}
-                    and start building your own layouts using Primer.
-                </CodeLine>
-                <Box display="inline-block" ml={3} mt={2}>
-                    <img
-                        src={MonaLoadingImage}
-                        alt="mona"
-                        width={48}
-                        height={48}
-                    />
-                </Box>
-            </Box>
-            <Footer />
-        </Box>
-    )
+  const navigate = useNavigate()
+  const handleSelect = (href, navigation) => {
+    console.log('handleSelect', href)
+    navigate(href)
+    setSelectedItem(navigation)
+  }
+  const { pathname } = useLocation()
+
+  const [selectedItem, setSelectedItem] = React.useState(0)
+  useEffect(() => {
+    console.log(pathname)
+    setSelectedItem(pathname)
+  }, [])
+
+  return (
+    <Box
+      sx={{
+        backgroundColor: 'canvas.default',
+        width: '100%',
+        minHeight: '100vh',
+        paddingX: 0,
+        paddingY: 8,
+      }}
+    >
+      <UnderlineNav aria-label="Repository">
+        {items.map((item) => (
+          <UnderlineNav.Item
+            key={item.navigation}
+            as={Link}
+            icon={GitPullRequestIcon}
+            counter={item.counter}
+            to={item.href}
+            onSelect={() => {
+              handleSelect(item.href, item.navigation)
+            }}
+            selected={selectedItem === item.href}
+          >
+            {item.navigation}
+          </UnderlineNav.Item>
+        ))}
+      </UnderlineNav>
+
+      <Routes>
+        <Route path="/" element={<Code />}></Route>
+        <Route path="/code" element={<Code />}></Route>
+        <Route path="/issues" element={<Issues />}></Route>
+        <Route path="/pulls" element={<PullRequests />}></Route>
+        <Route path="/discussions" element={<Discussions />}></Route>
+        <Route path="*" element={<NotFound />}></Route>
+      </Routes>
+    </Box>
+  )
 }
 
-function CodeLine({ icon, iconColor, children }) {
-    return (
-        <Box display="flex" color="fg.onEmphasis" mb={2}>
-            <Box display="flex" mt="2px" width={20} minWidth={20}>
-                <StyledOcticon icon={icon} size={16} color={iconColor} />
-            </Box>
-            <Text as="p" flex={1} fontSize={1} fontFamily="mono" ml={2}>
-                {children}
-            </Text>
-        </Box>
-    )
+function Code() {
+  return <div>Code</div>
+}
+function Issues() {
+  return <div>Issues</div>
+}
+function PullRequests() {
+  return <div>Pull Requests'</div>
 }
 
-function Footer() {
-    return (
-        <Box textAlign="center">
-            <Box mr={2} display="inline-block">
-                <StyledOcticon
-                    icon={MortarBoardIcon}
-                    size={16}
-                    color="attention.fg"
-                    sx={{ mr: 1 }}
-                />
-                <Text color="attention.fg">Tip</Text>
-            </Box>
-            <Text>
-                Before you get started check out our{' '}
-                <Link href="https://primer.style/react" target="_blank">
-                    Primer React Documentation
-                </Link>
-            </Text>
-        </Box>
-    )
+function Discussions() {
+  return <div>Discussions</div>
 }
-
+function NotFound() {
+  return <div>Not found</div>
+}
 export default Playground
